@@ -1,0 +1,15 @@
+name: Scheduled GET Request
+
+on:
+  schedule:
+    - cron: "0 */3 * * *" # Runs every 3 hours
+  workflow_dispatch: # Allows manual trigger from GitHub Actions UI
+
+jobs:
+  get-request:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Send GET Request
+        run: |
+          curl -v --fail "${{ secrets.TARGET_URL }}"

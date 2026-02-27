@@ -1,0 +1,172 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+  .text-pretty {
+    text-wrap: pretty;
+  }
+}
+
+@layer base {
+  :root {
+    /* Light theme - Clean, bright with navy + gold accents */
+    --background: 210 20% 98%;
+    --foreground: 215 50% 15%;
+    --card: 0 0% 100%;
+    --card-foreground: 215 50% 15%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 215 50% 15%;
+    --primary: 215 65% 18%;
+    --primary-foreground: 45 70% 70%;
+    --secondary: 210 15% 93%;
+    --secondary-foreground: 215 50% 15%;
+    --muted: 210 15% 93%;
+    --muted-foreground: 215 15% 45%;
+    --accent: 43 55% 55%;
+    --accent-foreground: 215 65% 12%;
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 210 15% 88%;
+    --input: 210 15% 88%;
+    --ring: 43 55% 55%;
+    --chart-1: 215 65% 18%;
+    --chart-2: 43 55% 55%;
+    --chart-3: 197 37% 24%;
+    --chart-4: 173 58% 39%;
+    --chart-5: 27 87% 67%;
+    --radius: 0.5rem;
+    --gold: 43 55% 55%;
+    --gold-foreground: 215 65% 12%;
+    --navy: 215 65% 18%;
+    --navy-foreground: 45 70% 70%;
+    --sidebar-background: 0 0% 98%;
+    --sidebar-foreground: 215 50% 15%;
+    --sidebar-primary: 215 65% 18%;
+    --sidebar-primary-foreground: 0 0% 98%;
+    --sidebar-accent: 210 15% 93%;
+    --sidebar-accent-foreground: 215 50% 15%;
+    --sidebar-border: 210 15% 88%;
+    --sidebar-ring: 43 55% 55%;
+  }
+
+  .dark {
+    /* Dark theme - Deep navy base with gold highlights */
+    --background: 215 60% 8%;
+    --foreground: 210 20% 92%;
+    --card: 215 55% 12%;
+    --card-foreground: 210 20% 92%;
+    --popover: 215 55% 12%;
+    --popover-foreground: 210 20% 92%;
+    --primary: 43 55% 55%;
+    --primary-foreground: 215 65% 8%;
+    --secondary: 215 45% 16%;
+    --secondary-foreground: 210 20% 92%;
+    --muted: 215 45% 16%;
+    --muted-foreground: 210 15% 55%;
+    --accent: 43 55% 55%;
+    --accent-foreground: 215 65% 8%;
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 215 40% 20%;
+    --input: 215 40% 20%;
+    --ring: 43 55% 55%;
+    --chart-1: 43 55% 55%;
+    --chart-2: 215 65% 40%;
+    --chart-3: 30 80% 55%;
+    --chart-4: 173 58% 39%;
+    --chart-5: 340 75% 55%;
+    --gold: 43 55% 55%;
+    --gold-foreground: 215 65% 8%;
+    --navy: 215 65% 18%;
+    --navy-foreground: 45 70% 70%;
+    --sidebar-background: 215 60% 8%;
+    --sidebar-foreground: 210 20% 92%;
+    --sidebar-primary: 43 55% 55%;
+    --sidebar-primary-foreground: 215 65% 8%;
+    --sidebar-accent: 215 45% 16%;
+    --sidebar-accent-foreground: 210 20% 92%;
+    --sidebar-border: 215 40% 20%;
+    --sidebar-ring: 43 55% 55%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+}
+
+/* Smooth scrolling */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+::-webkit-scrollbar-track {
+  background: hsl(var(--background));
+}
+::-webkit-scrollbar-thumb {
+  background: hsl(var(--muted-foreground));
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: hsl(var(--accent));
+}
+
+/* Glass morphism utilities */
+@layer components {
+  .glass {
+    @apply border border-white/15 bg-white/5 backdrop-blur-xl;
+  }
+  .glass-strong {
+    @apply border border-white/20 bg-white/10 backdrop-blur-2xl;
+  }
+  .glass-card {
+    @apply border border-border/50 bg-card/80 backdrop-blur-xl shadow-lg;
+  }
+  .glass-card-dark {
+    @apply border border-white/10 bg-white/5 backdrop-blur-xl;
+  }
+  .glass-gold {
+    @apply border border-[#C5A55A]/20 bg-[#C5A55A]/5 backdrop-blur-xl;
+  }
+}
+
+/* Shimmer animation for glass accents */
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-10px); }
+}
+
+@keyframes glow {
+  0%, 100% { opacity: 0.4; }
+  50% { opacity: 0.8; }
+}
+
+.animate-shimmer {
+  animation: shimmer 3s ease-in-out infinite;
+  background-size: 200% 100%;
+}
+
+.animate-float {
+  animation: float 6s ease-in-out infinite;
+}
+
+.animate-glow {
+  animation: glow 3s ease-in-out infinite;
+}
