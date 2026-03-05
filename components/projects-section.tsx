@@ -131,6 +131,7 @@ export function ProjectsSection() {
           </div>
           <Button
             variant="outline"
+            onClick={() => window.open("/portfolio.pdf", "_blank")}
             className="shrink-0 border-accent/30 text-accent hover:bg-accent/10 hover:text-accent font-semibold rounded-full bg-transparent backdrop-blur-sm transition-all duration-300 hover:border-accent/50"
           >
             View Full Portfolio
@@ -300,13 +301,6 @@ export function ProjectsSection() {
                 </div>
                 
                 {/* Download PDF Button */}
-                <Button className="shrink-0 rounded-full gap-2">
-                  <Download className="h-4 w-4" />
-                  {/* @ts-ignore - Assuming you add a pdfUrl to your db */}
-                  <a href={selectedProject.pdfUrl || "#"} download target="_blank" rel="noreferrer">
-                    Download Portfolio PDF
-                  </a>
-                </Button>
               </div>
 
               <div className="prose prose-sm sm:prose-base dark:prose-invert max-w-none text-muted-foreground">

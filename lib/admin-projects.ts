@@ -30,44 +30,18 @@ interface ProjectRow {
    Defaults
 ===================== */
 export const DEFAULT_PROJECTS: AdminProject[] = [
-  {
-    id: "default-1",
-    image: "/images/project-1.jpg",
-    title: "Horizon Corporate Tower",
-    location: "Mumbai, Maharashtra",
-    type: "Curtain Wall System",
-  },
-  {
-    id: "default-2",
-    image: "/images/project-2.jpg",
-    title: "Galaxy Mall & Convention Centre",
-    location: "Bangalore, Karnataka",
-    type: "ACP Cladding & Glazing",
-  },
-  {
-    id: "default-3",
-    image: "/images/project-3.jpg",
-    title: "MedLife Super Speciality Hospital",
-    location: "Delhi NCR",
-    type: "Structural Glazing",
-  },
-  {
-    id: "default-4",
-    image: "/images/project-4.jpg",
-    title: "The Grand Heritage Hotel",
-    location: "Jaipur, Rajasthan",
-    type: "Spider Glazing & Canopy",
-  },
+  { id: "default-1", image: "/images/project-1.jpg", title: "Horizon Corporate Tower",        location: "Mumbai, Maharashtra",    type: "Curtain Wall System"     },
+  { id: "default-2", image: "/images/project-2.jpg", title: "Galaxy Mall & Convention Centre", location: "Bangalore, Karnataka",   type: "ACP Cladding & Glazing"  },
+  { id: "default-3", image: "/images/project-3.jpg", title: "MedLife Super Speciality Hospital",location: "Delhi NCR",             type: "Structural Glazing"      },
+  { id: "default-4", image: "/images/project-4.jpg", title: "The Grand Heritage Hotel",        location: "Jaipur, Rajasthan",      type: "Spider Glazing & Canopy" },
 ];
 
 /* =====================
    Columns fetched from DB
-   — never use select("*"); list only what the UI needs.
 ===================== */
 const PROJECT_COLUMNS =
   "id, name, location, category, image_url, year, description, created_at" as const;
 
-/** Default page size. Pass a higher value only when exporting. */
 const DEFAULT_LIMIT = 20;
 
 /* =====================
@@ -75,39 +49,39 @@ const DEFAULT_LIMIT = 20;
 ===================== */
 function mapFromDb(row: ProjectRow): AdminProject {
   return {
-    id: row.id,
-    title: row.name,
-    location: row.location,
-    type: row.category,
-    image: row.image_url ?? "",
-    year: row.year ?? undefined,
+    id:          row.id,
+    title:       row.name,
+    location:    row.location,
+    type:        row.category,
+    image:       row.image_url ?? "",
+    year:        row.year        ?? undefined,
     description: row.description ?? undefined,
   };
 }
 
 function mapToDb(project: Omit<AdminProject, "id">) {
   return {
-    name: project.title,
-    location: project.location,
-    category: project.type,
-    year: project.year ?? new Date().getFullYear().toString(),
-    image_url: project.image || null,
+    name:        project.title,
+    location:    project.location,
+    category:    project.type,
+    year:        project.year ?? null,
+    image_url:   project.image || null,
     description: project.description ?? null,
   };
 }
 
 /* =====================
-   Image Upload
+   Image Upload to Supabase Storage
 ===================== */
 async function uploadProjectImage(dataUrl: string): Promise<string | null> {
   try {
     const [meta, base64Data] = dataUrl.split(",");
-    const mimeType = meta.split(";")[0].split(":")[1];
+    const mimeType  = meta.split(";")[0].split(":")[1];
     const extension = mimeType === "image/png" ? "png" : "jpg";
-    const fileName = `project-${Date.now()}.${extension}`;
+    const fileName  = `project-${Date.now()}.${extension}`;
 
     const byteCharacters = atob(base64Data);
-    const byteNumbers = new Uint8Array(byteCharacters.length);
+    const byteNumbers    = new Uint8Array(byteCharacters.length);
     for (let i = 0; i < byteCharacters.length; i++) {
       byteNumbers[i] = byteCharacters.charCodeAt(i);
     }
@@ -133,15 +107,26 @@ async function uploadProjectImage(dataUrl: string): Promise<string | null> {
   }
 }
 
+/**
+ * Extract the storage file path from a Supabase public URL.
+ * e.g. "https://xxx.supabase.co/storage/v1/object/public/project-images/project-123.jpg"
+ *      → "project-123.jpg"
+ */
+function extractStoragePath(publicUrl: string): string | null {
+  try {
+    const marker = "/project-images/";
+    const idx    = publicUrl.indexOf(marker);
+    if (idx === -1) return null;
+    return publicUrl.slice(idx + marker.length);
+  } catch {
+    return null;
+  }
+}
+
 /* =====================
    Queries
 ===================== */
 
-/**
- * Fetch projects from Supabase, newest first.
- *
- * @param limit - Max rows to return (default 20). Pass `Infinity` only for exports.
- */
 export async function getProjects(limit = DEFAULT_LIMIT): Promise<AdminProject[]> {
   const { data, error } = await supabase
     .from("projects")
@@ -158,10 +143,6 @@ export async function getProjects(limit = DEFAULT_LIMIT): Promise<AdminProject[]
   return (data ?? []).map(mapFromDb);
 }
 
-/**
- * Fetch a lightweight project count without loading all rows.
- * Use this for the dashboard stat display instead of `projects.length`.
- */
 export async function getProjectCount(): Promise<number> {
   const { count, error } = await supabase
     .from("projects")
@@ -175,7 +156,7 @@ export async function getProjectCount(): Promise<number> {
   return count ?? 0;
 }
 
-/** Insert a new project (uploads image to storage if base64). */
+/** Insert a new project (uploads image to Storage if base64 data URL). */
 export async function addProject(
   project: Omit<AdminProject, "id">
 ): Promise<AdminProject | null> {
@@ -211,11 +192,11 @@ export async function updateProject(
   }
 
   const patch: Record<string, string | null> = {};
-  if (updates.title !== undefined)       patch.name        = updates.title;
-  if (updates.location !== undefined)    patch.location    = updates.location;
-  if (updates.type !== undefined)        patch.category    = updates.type;
-  if (imageUrl !== undefined)            patch.image_url   = imageUrl || null;
-  if (updates.year !== undefined)        patch.year        = updates.year ?? null;
+  if (updates.title       !== undefined) patch.name        = updates.title;
+  if (updates.location    !== undefined) patch.location    = updates.location;
+  if (updates.type        !== undefined) patch.category    = updates.type;
+  if (updates.year        !== undefined) patch.year        = updates.year ?? null;
+  if (imageUrl            !== undefined) patch.image_url   = imageUrl || null;
   if (updates.description !== undefined) patch.description = updates.description ?? null;
 
   const { data, error } = await supabase
@@ -233,13 +214,49 @@ export async function updateProject(
   return mapFromDb(data);
 }
 
-/** Delete a project by id. */
+/**
+ * Delete a project row AND its image from Supabase Storage.
+ *
+ * Steps:
+ * 1. Fetch the image_url so we know which storage file to delete.
+ * 2. Delete the DB row (RLS: requires auth.uid() IS NOT NULL).
+ * 3. If step 2 succeeded and the image was a Storage URL, delete the file.
+ *
+ * Returns true only if the DB row was deleted successfully.
+ * A storage cleanup failure is logged but does not fail the overall operation.
+ */
 export async function deleteProject(id: string): Promise<boolean> {
-  const { error } = await supabase.from("projects").delete().eq("id", id);
+  // Step 1 — get image_url before we delete the row
+  const { data: existing } = await supabase
+    .from("projects")
+    .select("image_url")
+    .eq("id", id)
+    .single<{ image_url: string | null }>();
+
+  // Step 2 — delete the DB row
+  const { error } = await supabase
+    .from("projects")
+    .delete()
+    .eq("id", id);
 
   if (error) {
     console.error("[admin-projects] delete error:", error.message);
     return false;
+  }
+
+  // Step 3 — clean up storage image (best-effort; non-fatal)
+  const imageUrl = existing?.image_url ?? null;
+  if (imageUrl) {
+    const storagePath = extractStoragePath(imageUrl);
+    if (storagePath) {
+      const { error: storageError } = await supabase.storage
+        .from("project-images")
+        .remove([storagePath]);
+
+      if (storageError) {
+        console.warn("[admin-projects] storage cleanup failed:", storageError.message);
+      }
+    }
   }
 
   return true;
@@ -263,8 +280,8 @@ export async function getStorageUsedBytes(): Promise<number> {
   }
 }
 
-// ── Legacy stubs ─────────────────────────────────────────────────────────────
-/** @deprecated Data is now stored in Supabase. Remove this call. */
-export const getStoredProjects = (): AdminProject[] => [];
-/** @deprecated Data is now stored in Supabase. Remove this call. */
-export const saveStoredProjects = (_projects: AdminProject[]): void => {};
+// ── Legacy stubs ──────────────────────────────────────────────
+/** @deprecated Use Supabase directly. */
+export const getStoredProjects    = (): AdminProject[]           => [];
+/** @deprecated Use Supabase directly. */
+export const saveStoredProjects   = (_: AdminProject[]): void    => {};
