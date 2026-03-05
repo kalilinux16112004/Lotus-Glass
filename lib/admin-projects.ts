@@ -1,5 +1,9 @@
+// admin-projects.ts - Supabase-backed project management for admin interface
 import { supabase } from "./supabase";
 
+/* =====================
+   Types
+===================== */
 export interface AdminProject {
   id: string;
   title: string;
@@ -10,6 +14,21 @@ export interface AdminProject {
   description?: string;
 }
 
+/** Shape of a raw row returned from the `projects` table. */
+interface ProjectRow {
+  id: string;
+  name: string;
+  location: string;
+  category: string;
+  image_url: string | null;
+  year: string | null;
+  description: string | null;
+  created_at: string;
+}
+
+/* =====================
+   Defaults
+===================== */
 export const DEFAULT_PROJECTS: AdminProject[] = [
   {
     id: "default-1",
@@ -41,21 +60,31 @@ export const DEFAULT_PROJECTS: AdminProject[] = [
   },
 ];
 
-// Map Supabase row → AdminProject
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-function mapFromDb(row: Record<string, any>): AdminProject {
+/* =====================
+   Columns fetched from DB
+   — never use select("*"); list only what the UI needs.
+===================== */
+const PROJECT_COLUMNS =
+  "id, name, location, category, image_url, year, description, created_at" as const;
+
+/** Default page size. Pass a higher value only when exporting. */
+const DEFAULT_LIMIT = 20;
+
+/* =====================
+   Mapping
+===================== */
+function mapFromDb(row: ProjectRow): AdminProject {
   return {
     id: row.id,
     title: row.name,
     location: row.location,
     type: row.category,
     image: row.image_url ?? "",
-    year: row.year,
+    year: row.year ?? undefined,
     description: row.description ?? undefined,
   };
 }
 
-// Map AdminProject → Supabase insert payload
 function mapToDb(project: Omit<AdminProject, "id">) {
   return {
     name: project.title,
@@ -67,7 +96,9 @@ function mapToDb(project: Omit<AdminProject, "id">) {
   };
 }
 
-// Upload a base64 data URL to Supabase Storage and return the public URL
+/* =====================
+   Image Upload
+===================== */
 async function uploadProjectImage(dataUrl: string): Promise<string | null> {
   try {
     const [meta, base64Data] = dataUrl.split(",");
@@ -87,7 +118,7 @@ async function uploadProjectImage(dataUrl: string): Promise<string | null> {
       .upload(fileName, blob, { contentType: mimeType });
 
     if (error) {
-      console.error("Image upload failed:", error);
+      console.error("[admin-projects] image upload failed:", error.message);
       return null;
     }
 
@@ -97,99 +128,124 @@ async function uploadProjectImage(dataUrl: string): Promise<string | null> {
 
     return urlData.publicUrl;
   } catch (err) {
-    console.error("Error processing image:", err);
+    console.error("[admin-projects] error processing image:", err);
     return null;
   }
 }
 
-// Fetch all projects from Supabase
-export async function getProjects(): Promise<AdminProject[]> {
+/* =====================
+   Queries
+===================== */
+
+/**
+ * Fetch projects from Supabase, newest first.
+ *
+ * @param limit - Max rows to return (default 20). Pass `Infinity` only for exports.
+ */
+export async function getProjects(limit = DEFAULT_LIMIT): Promise<AdminProject[]> {
   const { data, error } = await supabase
     .from("projects")
-    .select("*")
-    .order("created_at", { ascending: false });
+    .select(PROJECT_COLUMNS)
+    .order("created_at", { ascending: false })
+    .limit(limit)
+    .returns<ProjectRow[]>();
 
   if (error) {
-    console.error("Error fetching projects:", error);
+    console.error("[admin-projects] fetch error:", error.message);
     return [];
   }
 
   return (data ?? []).map(mapFromDb);
 }
 
-// Insert a new project (uploads image to storage if base64)
+/**
+ * Fetch a lightweight project count without loading all rows.
+ * Use this for the dashboard stat display instead of `projects.length`.
+ */
+export async function getProjectCount(): Promise<number> {
+  const { count, error } = await supabase
+    .from("projects")
+    .select("id", { count: "exact", head: true });
+
+  if (error) {
+    console.error("[admin-projects] count error:", error.message);
+    return 0;
+  }
+
+  return count ?? 0;
+}
+
+/** Insert a new project (uploads image to storage if base64). */
 export async function addProject(
   project: Omit<AdminProject, "id">
 ): Promise<AdminProject | null> {
   let imageUrl = project.image;
 
-  if (imageUrl && imageUrl.startsWith("data:")) {
-    const uploaded = await uploadProjectImage(imageUrl);
-    imageUrl = uploaded ?? imageUrl;
+  if (imageUrl?.startsWith("data:")) {
+    imageUrl = (await uploadProjectImage(imageUrl)) ?? imageUrl;
   }
 
   const { data, error } = await supabase
     .from("projects")
     .insert([mapToDb({ ...project, image: imageUrl })])
-    .select()
-    .single();
+    .select(PROJECT_COLUMNS)
+    .single<ProjectRow>();
 
   if (error) {
-    console.error("Error adding project:", error);
+    console.error("[admin-projects] insert error:", error.message);
     return null;
   }
 
   return mapFromDb(data);
 }
 
-// Update an existing project
+/** Update an existing project by id. */
 export async function updateProject(
   id: string,
   updates: Partial<Omit<AdminProject, "id">>
 ): Promise<AdminProject | null> {
   let imageUrl = updates.image;
 
-  if (imageUrl && imageUrl.startsWith("data:")) {
-    const uploaded = await uploadProjectImage(imageUrl);
-    imageUrl = uploaded ?? imageUrl;
+  if (imageUrl?.startsWith("data:")) {
+    imageUrl = (await uploadProjectImage(imageUrl)) ?? imageUrl;
   }
 
   const patch: Record<string, string | null> = {};
-  if (updates.title !== undefined) patch.name = updates.title;
-  if (updates.location !== undefined) patch.location = updates.location;
-  if (updates.type !== undefined) patch.category = updates.type;
-  if (imageUrl !== undefined) patch.image_url = imageUrl || null;
-  if (updates.year !== undefined) patch.year = updates.year;
+  if (updates.title !== undefined)       patch.name        = updates.title;
+  if (updates.location !== undefined)    patch.location    = updates.location;
+  if (updates.type !== undefined)        patch.category    = updates.type;
+  if (imageUrl !== undefined)            patch.image_url   = imageUrl || null;
+  if (updates.year !== undefined)        patch.year        = updates.year ?? null;
   if (updates.description !== undefined) patch.description = updates.description ?? null;
 
   const { data, error } = await supabase
     .from("projects")
     .update(patch)
     .eq("id", id)
-    .select()
-    .single();
+    .select(PROJECT_COLUMNS)
+    .single<ProjectRow>();
 
   if (error) {
-    console.error("Error updating project:", error);
+    console.error("[admin-projects] update error:", error.message);
     return null;
   }
 
   return mapFromDb(data);
 }
 
-// Delete a project by id
+/** Delete a project by id. */
 export async function deleteProject(id: string): Promise<boolean> {
   const { error } = await supabase.from("projects").delete().eq("id", id);
 
   if (error) {
-    console.error("Error deleting project:", error);
+    console.error("[admin-projects] delete error:", error.message);
     return false;
   }
 
   return true;
 }
 
-// Return total bytes used in the project-images storage bucket
+/** Return total bytes used in the project-images storage bucket. */
 export async function getStorageUsedBytes(): Promise<number> {
   try {
     const { data, error } = await supabase.storage
@@ -207,6 +263,8 @@ export async function getStorageUsedBytes(): Promise<number> {
   }
 }
 
-// ── Legacy stubs kept so any remaining import sites compile ─────────────────
+// ── Legacy stubs ─────────────────────────────────────────────────────────────
+/** @deprecated Data is now stored in Supabase. Remove this call. */
 export const getStoredProjects = (): AdminProject[] => [];
+/** @deprecated Data is now stored in Supabase. Remove this call. */
 export const saveStoredProjects = (_projects: AdminProject[]): void => {};

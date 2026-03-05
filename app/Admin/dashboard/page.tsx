@@ -1,3 +1,4 @@
+// page.tsx - Admin dashboard for managing projects and contact submissions
 "use client";
 
 import { useEffect, useRef, useState } from "react";

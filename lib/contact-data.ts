@@ -1,3 +1,4 @@
+// contact-data.ts - Centralized contact information for Lotus Glass
 import { MapPin, Phone, Mail, Clock } from "lucide-react";
 
 /* =====================
