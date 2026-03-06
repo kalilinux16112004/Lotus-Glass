@@ -130,12 +130,11 @@ export function ProjectsSection() {
             </p>
           </div>
           <Button
-            variant="outline"
+            className="shrink-0 rounded-full gap-2"
             onClick={() => window.open("/portfolio.pdf", "_blank")}
-            className="shrink-0 border-accent/30 text-accent hover:bg-accent/10 hover:text-accent font-semibold rounded-full bg-transparent backdrop-blur-sm transition-all duration-300 hover:border-accent/50"
           >
+            <Download className="h-4 w-4" />
             View Full Portfolio
-            <ArrowRight className="ml-2 h-4 w-4" />
           </Button>
         </div>
 

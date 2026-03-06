@@ -8,6 +8,12 @@ import {
   PanelTop,
   Sun,
   Settings,
+  Building2,
+  Columns,
+  Shield,
+  Square,
+  Home,
+  Hammer,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -16,37 +22,67 @@ const services = [
     icon: Layers,
     title: "Structural Glazing",
     description:
-      "High-performance structural silicone glazing systems designed for superior weather resistance, thermal insulation, and long-term durability.",
-  },
-  {
-    icon: Grid3X3,
-    title: "Curtain Wall Systems",
-    description:
-      "Precision-engineered unitized and stick curtain wall systems that combine aesthetic elegance with structural integrity.",
-  },
-  {
-    icon: Maximize,
-    title: "Spider Glazing",
-    description:
-      "Frameless point-supported glass facades using stainless steel spider fittings, creating seamless transparency and modern aesthetics.",
-  },
-  {
-    icon: PanelTop,
-    title: "ACP Cladding",
-    description:
-      "Aluminium composite panel cladding solutions with fire-rated materials and precision installation in a wide range of finishes.",
+      "All types of structural glazing systems designed for superior weather resistance, thermal insulation, and long-term durability with high-performance silicone bonding.",
   },
   {
     icon: Sun,
-    title: "Skylights & Canopies",
+    title: "Polycarbonate Roofing & Pre-Coated Sheet Sheds",
     description:
-      "Engineered skylight systems and glass canopies that bring natural light into interiors while maintaining waterproofing and safety.",
+      "Durable polycarbonate roofing and pre-coated sheet shed solutions offering excellent light transmission, UV protection, and weather resistance for industrial and commercial use.",
   },
   {
-    icon: Settings,
-    title: "Custom Facade Engineering",
+    icon: Building2,
+    title: "M.S. Structural Work",
     description:
-      "Bespoke facade solutions tailored to complex architectural designs including challenging geometries and curved glass.",
+      "Precision mild steel structural fabrication and erection for facades, canopies, frames, and support systems built to engineering specifications.",
+  },
+  {
+    icon: Grid3X3,
+    title: "Patch Fitting & Spider Fitting",
+    description:
+      "Frameless patch fitting and stainless steel spider fitting systems creating seamless glass facades with a modern, transparent aesthetic.",
+  },
+  {
+    icon: PanelTop,
+    title: "Metal False Ceiling",
+    description:
+      "Custom metal false ceiling solutions available in various profiles, finishes, and perforation patterns for commercial and architectural interiors.",
+  },
+  {
+    icon: Columns,
+    title: "S.S., S.S. Glass & Aluminum Glass Railing",
+    description:
+      "Stainless steel, SS glass, and aluminium glass railing systems combining safety, elegance, and modern design for balconies, staircases, and open spaces.",
+  },
+  {
+    icon: Maximize,
+    title: "Aluminum Sliding Windows",
+    description:
+      "All types of aluminium sliding windows engineered for smooth operation, energy efficiency, and architectural precision in residential and commercial projects.",
+  },
+  {
+    icon: Square,
+    title: "Dry Cladding (Granite)",
+    description:
+      "Natural granite dry cladding systems offering timeless aesthetics, structural reliability, and weather durability for exterior facades.",
+  },
+  {
+    icon: Shield,
+    title: "Merino HPL Cladding",
+    description:
+      "High-pressure laminate facade cladding using Merino HPL panels — impact-resistant, UV-stable, and available in a wide range of textures and colours.",
+  },
+  {
+    icon: Home,
+    title: "UPVC & FRP Fins",
+    description:
+      "UPVC and fibre-reinforced polymer fins for architectural sunshading, decorative facade elements, and structural fin applications.",
+  },
+  {
+    icon: Hammer,
+    title: "Civil & Interior Work",
+    description:
+      "Complete civil construction and interior fit-out services including flooring, partitions, false ceilings, painting, and all allied finishing works.",
   },
 ];
 
@@ -68,10 +104,14 @@ export function ServicesSection() {
   return (
     <section id="services" className="relative py-24 lg:py-32 bg-secondary overflow-hidden">
       {/* Background glass grid */}
-      <div className="absolute inset-0 opacity-[0.015]" style={{
-        backgroundImage: "linear-gradient(90deg, currentColor 1px, transparent 1px), linear-gradient(currentColor 1px, transparent 1px)",
-        backgroundSize: "80px 80px"
-      }} />
+      <div
+        className="absolute inset-0 opacity-[0.015]"
+        style={{
+          backgroundImage:
+            "linear-gradient(90deg, currentColor 1px, transparent 1px), linear-gradient(currentColor 1px, transparent 1px)",
+          backgroundSize: "80px 80px",
+        }}
+      />
 
       <div ref={ref} className="relative mx-auto max-w-7xl px-6 lg:px-8">
         {/* Section header */}
@@ -84,11 +124,11 @@ export function ServicesSection() {
         </div>
         <div className="mb-16 max-w-2xl">
           <h2 className="font-serif text-3xl font-bold leading-[1.15] text-secondary-foreground md:text-4xl lg:text-5xl text-balance">
-            Comprehensive Facade Solutions
+            Comprehensive Facade & Construction Solutions
           </h2>
           <p className="mt-4 text-lg leading-relaxed text-muted-foreground text-pretty">
-            From design to delivery, we provide a complete range of architectural glazing and
-            cladding services built on engineering precision and certified quality.
+            From structural glazing and cladding to civil and interior works, we deliver end-to-end
+            solutions built on engineering precision and certified quality.
           </p>
         </div>
 
@@ -99,11 +139,9 @@ export function ServicesSection() {
               key={service.title}
               className={cn(
                 "group relative overflow-hidden rounded-2xl border border-border/50 bg-card/70 backdrop-blur-lg p-8 transition-all duration-500 hover:shadow-2xl hover:border-accent/30 hover:bg-card/90",
-                isVisible
-                  ? "opacity-100 translate-y-0"
-                  : "opacity-0 translate-y-8"
+                isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
               )}
-              style={{ transitionDelay: isVisible ? `${index * 100}ms` : "0ms" }}
+              style={{ transitionDelay: isVisible ? `${index * 80}ms` : "0ms" }}
             >
               {/* Glass reflection on top edge */}
               <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-foreground/10 to-transparent" />
