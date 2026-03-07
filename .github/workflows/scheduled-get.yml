@@ -2,7 +2,7 @@ name: Scheduled GET Request
 
 on:
   schedule:
-    - cron: "0 */3 * * *" # Runs every 3 hours
+    - cron: "0 0 * * 0" # Runs every sunday at midnight
   workflow_dispatch: # Allows manual trigger from GitHub Actions UI
 
 jobs:
