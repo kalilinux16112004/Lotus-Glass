@@ -1,5 +1,5 @@
 import { Navbar } from "@/components/navbar";
-import { ProjectsSection } from "@/components/projects-section";
+import { ProjectsSectionShell } from "@/components/projects-section";
 import { CTABanner } from "@/components/cta-banner";
 import ContactSection from "@/components/contact-section";
 import { Footer } from "@/components/footer";
@@ -8,7 +8,7 @@ export default function ProjectsPage() {
   return (
     <main>
       <Navbar forceSolid />
-      <ProjectsSection />
+      <ProjectsSectionShell />
       <section className="relative py-24 lg:py-32 bg-secondary overflow-hidden">
         <div
           className="absolute inset-0 opacity-[0.02]"
@@ -31,8 +31,8 @@ export default function ProjectsPage() {
               Deeper Project Insights
             </h2>
             <p className="mt-4 text-lg leading-relaxed text-muted-foreground text-pretty">
-              A closer look at how we solve complex facade challenges with engineering precision
-              and on-site accountability.
+              A closer look at how we solve complex facade challenges with
+              engineering precision and on-site accountability.
             </p>
           </div>
 
@@ -40,18 +40,24 @@ export default function ProjectsPage() {
             {[
               {
                 title: "High-Rise Curtain Wall",
-                scope: "Unitized system with high wind-load performance and rapid floor-to-floor installation.",
-                result: "Delivered ahead of schedule with zero leakage incidents during monsoon testing.",
+                scope:
+                  "Unitized system with high wind-load performance and rapid floor-to-floor installation.",
+                result:
+                  "Delivered ahead of schedule with zero leakage incidents during monsoon testing.",
               },
               {
                 title: "Retail + Hospitality Complex",
-                scope: "ACP cladding, skylights, and glass canopy detailing across multiple entrances.",
-                result: "Unified facade language across retail and hotel zones with improved daylighting.",
+                scope:
+                  "ACP cladding, skylights, and glass canopy detailing across multiple entrances.",
+                result:
+                  "Unified facade language across retail and hotel zones with improved daylighting.",
               },
               {
                 title: "Healthcare Facility",
-                scope: "Structural glazing with enhanced acoustic and thermal insulation requirements.",
-                result: "Reduced HVAC load while maintaining sterile, glare-free interiors.",
+                scope:
+                  "Structural glazing with enhanced acoustic and thermal insulation requirements.",
+                result:
+                  "Reduced HVAC load while maintaining sterile, glare-free interiors.",
               },
             ].map((item) => (
               <div
@@ -59,8 +65,12 @@ export default function ProjectsPage() {
                 className="relative overflow-hidden rounded-2xl border border-border/50 bg-card/70 backdrop-blur-xl p-7 shadow-lg"
               >
                 <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-foreground/10 to-transparent" />
-                <h3 className="text-lg font-bold text-card-foreground">{item.title}</h3>
-                <p className="mt-3 text-sm leading-relaxed text-muted-foreground">{item.scope}</p>
+                <h3 className="text-lg font-bold text-card-foreground">
+                  {item.title}
+                </h3>
+                <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
+                  {item.scope}
+                </p>
                 <div className="mt-4 rounded-xl border border-accent/20 bg-accent/10 px-4 py-3 text-xs font-semibold text-accent">
                   {item.result}
                 </div>

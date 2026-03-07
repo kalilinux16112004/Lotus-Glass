@@ -3,7 +3,7 @@ import { HeroSlider } from "@/components/hero-slider";
 import { StatsBand } from "@/components/stats-band";
 import { AboutSection } from "@/components/about-section";
 import { ServicesSection } from "@/components/services-section";
-import { ProjectsSection } from "@/components/projects-section";
+import { ProjectsSectionShell } from "@/components/projects-section";
 import { WhyChooseSection } from "@/components/why-choose-section";
 import { WorkflowSection } from "@/components/workflow-section";
 import { CTABanner } from "@/components/cta-banner";
@@ -18,7 +18,7 @@ export default function Page() {
       <StatsBand />
       <AboutSection />
       <ServicesSection />
-      <ProjectsSection />
+      <ProjectsSectionShell />
       <WhyChooseSection />
       <WorkflowSection />
       <CTABanner />
