@@ -16,6 +16,7 @@ const playfair = Playfair_Display({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || 'https://lotusenterprises.info/'),
   title: "Lotus Enterprises | Premium Architectural Facade & Glazing Solutions Since 2003",
   description:
     "Lotus Enterprises delivers world-class architectural facade solutions including structural glazing, curtain walls, spider glazing, ACP cladding, and skylights. Trusted by architects and builders across India since 2003.",
